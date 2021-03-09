@@ -1,4 +1,4 @@
-<p align="center"><img src="angular.png" width="300px"></p>
+<p align="center"><img src="angular.png" width="150px"></p>
 
 <h1 align="center">
     <strong>Angular TodoList</strong>
