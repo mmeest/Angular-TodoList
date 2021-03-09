@@ -77,14 +77,14 @@ ng serve --open
 This will open our prjoect's boiler plate on browser
 
 ## Project files
-packace.json          - it has all depencencies and packages that are included\
-angular.json          - config file, where you can import bootstrap or local files\
-src/index.html        - main page\
-src/styles.css        - styling\
-app/                  - folder where you create all your components services\
-app/module.ts         - entrypoint to Angular. All new components has to go there(cli will add automatically). All components will be TypeScript(.ts) files\
-app/app.component.ts  - has TypeScript decorator. It includes metadata for component. 'app-root' will be displayed on index.html\
-app/app.component.html- will be displayed inside index.html
+**packace.json**          - it has all depencencies and packages that are included\
+**angular.json**          - config file, where you can import bootstrap or local files\
+**src/index.html**        - main page\
+**src/styles.css**        - styling\
+**app/**                  - folder where you create all your components services\
+**app/module.ts**         - entrypoint to Angular. All new components has to go there(cli will add automatically). All components will be TypeScript(.ts) files\
+**app/app.component.ts**  - has TypeScript decorator. It includes metadata for component. 'app-root' will be displayed on index.html\
+**app/app.component.html**- will be displayed inside index.html
 
 ## Project
 Let's create new component 'Todos'
