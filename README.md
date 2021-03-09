@@ -7,7 +7,7 @@
     TodoList app written in Angular
 </h3>
 
-<p align="left"><img src="Screenshot.jpg" width="450px"></p>
+<p align="left"><img src="Screenshot.jpg" width="150px"></p>
 
 ## Angular
 Angular https://angular.io/
@@ -51,7 +51,7 @@ ng --version
 ```
 
 ## Creating Angular project
-On termilan write
+On terminal write
 ```
 ng new angular-crash-todolist
 ```
