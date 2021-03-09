@@ -219,3 +219,258 @@ Todo One\
 Todo Two\
 Todo Three
 
+We will add a base 'styles.css' styling
+```
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.4;
+}
+
+a{
+    color: #333;
+    text-decoration: none;
+}
+
+.container{
+    padding: 0 1rem;
+}
+
+.btn{
+    display: inline-block;
+    border: none;
+    background: #555;
+    color: #555;
+    padding: 7px 20px;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background: #666;
+}
+```
+
+We will add a checkbox and 'Delete' button to every todo
+```
+<div>
+    <p>
+        <input type="checkbox">
+        {{ todo.title }}
+        <button class="del">x</button>
+    </p>
+</div>
+```
+
+We will add styling for it in 'todo-item.component.css'
+```
+.del {
+    background: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 5px 9px;
+    border-radius: 50%;
+    cursor: pointer;
+    float: right;
+}
+
+.todo {
+    background: #f4f4f4;
+    padding: 10px;
+    border-bottom: 1px #ccc dotted;
+}
+
+.is-complete {
+    text-decoration: line-through;
+}
+```
+
+We'll use ng class directiv to tell if todo is completed or not
+```
+<div [ngClass]="setClasses()">
+```
+
+In 'todo-item.component.ts' we will create 'setClasses()'
+```
+  setClasses() {
+    let classes = {
+      todo: true,
+      'is-complete': this.todo.completed
+    }
+
+    return classes;
+  }
+```
+
+We will add an event to input for 'checkbox' and 'Delete' button
+```
+<input (change)="onToggle(todo)" type="checkbox">
+{{ todo.title }}
+<button (click)="onDelete(todo)" class="del">x</button>
+```
+
+And we create those classes
+```
+onToggle(todo:any) {
+todo.completed = !todo.completed;
+}
+
+onDelete(todo:any) {
+console.log('delete');
+}
+```
+
+On terminal we create services
+```
+ng g s services/Todo
+```
+
+We'll move our array from 'todos.component.ts' to 'todo.service.ts'
+```
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TodoService {
+
+  constructor() { }
+
+  getTodos() {
+    return [
+      {
+        id: 1,
+        title: 'Todo One',
+        completed: true
+      },
+      {
+        id: 2,
+        title: 'Todo Two',
+        completed: true
+      },
+      {
+        id: 3,
+        title: 'Todo Three',
+        completed: false
+      }
+    ]
+  }
+}
+```
+
+And we call service in 'todos.component.ts'
+```
+import { Component, OnInit } from '@angular/core';
+import { TodoService } from '../../services/todo.service';
+
+import { Todo } from '../../models/Todo';
+
+@Component({
+  selector: 'app-todos',
+  templateUrl: './todos.component.html',
+  styleUrls: ['./todos.component.css']
+})
+export class TodosComponent implements OnInit {
+  todos: Todo[] = [];
+
+  constructor(private todoService:TodoService) { }
+
+  ngOnInit(): void {
+    this.todos = this.todoService.getTodos();
+  }
+}
+```
+
+We'll use JSON placeholder to store our inputs\
+In 'app.modules.ts' we import 'HttpClientModule'
+```
+import { HttpClientModule } from '@angular/common/http';
+HttpClientModule
+```
+
+In 'todo.service.ts' we also import that module, inject it into constructor and clear 'getTodos'
+```
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { Todo } from '../models/Todo';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TodoService {
+  todosUrl:string = 'https://jsonplaceholder.typicode.com/todos';
+
+  constructor(private http:HttpClient) { }
+
+  getTodos():Observable<Todo[]> {
+    return this.http.get<Todo[]>(this.todosUrl);
+  }
+}
+```
+
+We'll change 'ngOnInit' in 'todos.component.ts'
+```
+ngOnInit(): void {
+    this.todoService.getTodos().subscribe(todos => this.todos = todos);
+}
+```
+
+Now we get about 200 todos from service.\
+To limit that number to 5. We have can set it in todos URL
+```
+todosUrl:string = 'https://jsonplaceholder.typicode.com/todos?_limit=5';
+```
+
+Better way is to create whole new property for limit and set it in get request
+```
+export class TodoService {
+  todosUrl:string = 'https://jsonplaceholder.typicode.com/todos?';
+  todosLimit = '?_limit=5';
+
+  constructor(private http:HttpClient) { }
+
+  getTodos():Observable<Todo[]> {
+    return this.http.get<Todo[]>(`${this.todosUrl}${this.todosLimit}`);
+  }
+}
+```
+
+In 'todo-item.components.ts' we import service, inject it and addit to 'onToggle' method
+```
+import { TodoService } from '../../services/todo.service'
+
+constructor(private todoService:TodoService) { }
+
+onToggle(todo:any) {
+// Toggle in UI
+todo.completed = !todo.completed;
+// Toggle on server
+this.todoService.toggleCompleted(todo).subscribe(todo => console.log(todo));
+}
+```
+
+In 'todo.service.ts' we create object 'httpOptions' and method 'toggleCompleted'
+```
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json'
+  })
+}
+
+// Toggle Completed
+toggleCompleted(todo: Todo):Observable<any> {
+const url = `${this.todosUrl}/${todo.id}`
+return this.http.put(url, todo, httpOptions);
+}
+```
+
+Now when we click on checkbox our todo get strike thru and we see response on service on console
+
+Next we handle the 'Delete' button
+
