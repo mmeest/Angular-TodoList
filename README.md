@@ -7,7 +7,7 @@
     TodoList app written in Angular
 </h3>
 
-<p align="left"><img src="Screenshot.png" width="350px"></p>
+<p align="left"><img src="Screenshot.png" width="450px"></p>
 
 ## Angular
 Angular https://angular.io/
@@ -745,3 +745,5 @@ We'll add a little navigation in the header 'header.component.html'
     </nav>
 </header>
 ```
+
+# Happy Coding !!!
