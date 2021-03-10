@@ -93,9 +93,9 @@ ng generate component components/Todos
 ```
 
 This will create src/app/components/todos folder with:
-* *todos.component.css*\
-* *todos.component.html*\
-* *todos.component.spec.ts*\
+* *todos.component.css*
+* *todos.component.html*
+* *todos.component.spec.ts*
 * *todos.component.ts*
 
 On app.component.html we will embed our Todos page by adding component selector(app-todos)
