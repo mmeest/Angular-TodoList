@@ -7,7 +7,7 @@
     TodoList app written in Angular
 </h3>
 
-<p align="left"><img src="Screenshot.jpg" width="150px"></p>
+<p align="left"><img src="Screenshot.png" width="350px"></p>
 
 ## Angular
 Angular https://angular.io/
@@ -472,5 +472,276 @@ return this.http.put(url, todo, httpOptions);
 
 Now when we click on checkbox our todo get strike thru and we see response on service on console
 
-Next we handle the 'Delete' button
+Next we handle the 'Delete' button.\
+For that we will import 'EventEmitter' and 'Output' in 'todo-item.components.ts'\
+create output and method
+```
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 
+@Output() deleteTodo: EventEmitter<Todo> = new EventEmitter();
+
+onDelete(todo:any) {
+  this.deleteTodo.emit(todo);
+}
+```
+
+We are going to catch this 'deleteTodo' in 'todos.component.html'
+```
+<app-todo-item 
+    *ngFor="let todo of todos" 
+    [todo]="todo"
+    (deleteTodo)="deleteTodo($event)"
+    >
+</app-todo-item>
+```
+
+In 'todos.component.ts' we will create deleteTodo()
+```
+deleteTodo(todo:Todo){
+  this.todos = this.todos.filter(t => t.id !== todo.id);
+}
+```
+
+If we click now on delete button, todo will dissapear from UI.\
+To access server side we'll add to 'todos.components.ts'
+```
+deleteTodo(todo:Todo){
+  this.todos = this.todos.filter(t => t.id !== todo.id);
+  this.todoService.deleteTodo(todo).subscribe();
+}
+```
+
+Now we need to create deleteTodo service in 'todo.service.ts'
+```
+deleteTodo(todo: Todo):Observable<Todo>{
+  const url = `${this.todosUrl}/${todo.id}`
+  return this.http.delete<Todo>(url, httpOptions);
+}
+```
+
+Next we'll add header component without any functionality. For that we write in terminal
+```
+ng g c components/layout/Header
+```
+
+Let's open up newly created './src/app/components/layout/header/header.component.html' and add an header tag
+```
+<header class="header">
+    <h1>TodoList</h1>
+</header>
+```
+
+In 'header.component.css' we add some styling
+```
+.header{
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+
+.header a {
+    color: #fff;
+    text-decoration: none;
+}
+```
+
+Lets bring that header up to the main html 'app.component.html'.
+```
+<div>
+  <app-header></app-header>
+  <app-todos></app-todos>
+</div>
+```
+
+Next we'll create component AddTodo in terminal
+```
+ng g c components/AddTodo
+```
+
+We will open up './src/app/components/add-todo/add-todo.component.ts' and add title property
+```
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-add-todo',
+  templateUrl: './add-todo.component.html',
+  styleUrls: ['./add-todo.component.css']
+})
+export class AddTodoComponent implements OnInit {
+  title!:string;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+```
+
+In 'add-todo.component.html' we create form
+```
+<form class="form">
+    <input type="text" name="title" [(ngModel)]="title" placeholder="Add Todo...">
+    <input type="submit" value="Submit" class="btn">
+</form>
+```
+
+In 'app.modules.ts' we'll import forms and add it to imports
+```
+import { FormsModule } from '@angular/forms'
+
+imports: [
+  BrowserModule,
+  AppRoutingModule,
+  HttpClientModule,
+  FormsModule
+],
+```
+
+We will embed addTodo in 'todos.component.html'
+```
+<app-add-todo></app-add-todo>
+```
+
+And we add some styling in 'add-todos.component.css'
+```
+.form{
+    display: flex;
+}
+
+.form input[type='text']{
+    flex: 10;
+    padding: 5px;
+}
+
+.form input[type='submit']{
+    flex: 2;
+}
+```
+
+Next we add our todo to list in 'add-todo.component.html'
+```
+<form class="form" (ngSubmit)="onSubmit()">
+```
+
+In 'add-todo.component.ts' 
+```
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+
+@Component({
+  selector: 'app-add-todo',
+  templateUrl: './add-todo.component.html',
+  styleUrls: ['./add-todo.component.css']
+})
+export class AddTodoComponent implements OnInit {
+  @Output() addTodo: EventEmitter<any> = new EventEmitter();
+
+  title!:string;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+  onSubmit(){
+    const todo = {
+      title: this.title,
+      completed: false
+    }
+
+    this.addTodo.emit(todo);
+  }
+
+}
+```
+
+We'll catch it in our 'todos-component.html'
+```
+<app-add-todo (addTodo)="addTodo($event)"></app-add-todo>
+```
+
+In 'todos.component.ts'
+```
+addTodo(todo:Todo){
+  this.todoService.addTodo(todo).subscribe(todo => {
+    this.todos.push(todo);
+  })
+}
+```
+
+And in 'todo.service.ts' we will add addtodo
+```
+// Add Todo
+addTodo(todo:Todo):Observable<Todo>{
+ return this.http.post<Todo>(this.todosUrl, todo, httpOptions);
+}
+```
+
+Now we can add our todos to the list on main page.\
+Last thing to do is to use router in 'app-routing.module.ts'
+```
+import { TodosComponent } from './components/todos/todos.component';
+
+const routes: Routes = [
+  { 
+    path: '', 
+    component: TodosComponent
+  }
+];
+```
+
+In order to our router to work we have to go to our 'app.component.html' and change 'app-todos'
+```
+<div>
+  <app-header></app-header>
+  <router-outlet></router-outlet>
+</div>
+```
+
+Now we add page 'about' in terminal
+```
+ng g c components/pages/About
+```
+
+In 'about.component.html'
+```
+<div>
+    <h1>About</h1>
+    <p>This is the TodoList app v1.0.0 It is part of a Angular crash course</p>
+</div>
+```
+
+In routing module 'app-routing.module.ts'
+```
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { TodosComponent } from './components/todos/todos.component';
+import { AboutComponent } from './components/pages/about/about.component';
+
+const routes: Routes = [
+  { path: '', component: TodosComponent },
+  { path: 'about', component: AboutComponent }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+```
+
+We can open About page addres in our browser
+```
+localhost:4200/about
+```
+
+We'll add a little navigation in the header 'header.component.html'
+```
+<header class="header">
+    <h1>TodoList</h1>
+    <nav>
+        <a routerLink="/">Home</a> | <a routerLink="/about">About</a>
+    </nav>
+</header>
+```
