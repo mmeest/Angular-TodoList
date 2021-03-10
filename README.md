@@ -160,9 +160,9 @@ Let's loop thru this array on our 'todos.component.html' with 'ngFor'
 ```
 
 Output will display our todos
-* Todo One\
-* Todo Two\
-* Todo Three\
+* Todo One
+* Todo Two
+* Todo Three
 
 Let's make every todo a different componenet.}
 For that we type on our terminal
