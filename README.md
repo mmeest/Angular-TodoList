@@ -7,7 +7,7 @@
     TodoList app written in Angular
 </h3>
 
-<p align="left"><img src="Screenshot.png" width="450px"></p>
+<p align="left"><img src="https://user-images.githubusercontent.com/34022590/110830666-1f842980-82a2-11eb-8c68-26f5bbf682e4.png" width="450px"></p>
 
 ## Angular
 Angular https://angular.io/
